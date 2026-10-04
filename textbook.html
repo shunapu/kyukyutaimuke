@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <meta name="description" content="救急救命士標準テキストPDFの端末内登録と閲覧">
+  <title>救急救命士標準テキスト | 救急隊支援</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="textbook.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="病院情報 ホーム">
+      <span class="brand-mark" aria-hidden="true">＋</span>
+      <span>救急隊支援<small>EMERGENCY RESPONSE</small></span>
+    </a>
+    <nav class="topbar-nav" aria-label="メインナビゲーション">
+      <a class="nav-link" href="index.html">病院情報</a>
+      <a class="nav-link" href="protocols.html">救急マニュアル</a>
+      <a class="nav-link nav-link-active" href="textbook.html" aria-current="page">標準テキスト</a>
+    </nav>
+  </header>
+
+  <main class="app-shell">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">救急隊向け / 教材</p>
+        <h1 id="page-title">救急救命士標準テキスト</h1>
+        <p class="subheading">利用許諾のあるPDFを登録して、このブラウザー内で閲覧できます。</p>
+      </div>
+      <span class="local-badge">この端末に保存</span>
+    </section>
+
+    <section class="editor-panel" aria-labelledby="upload-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">テキストの登録</p><h2 id="upload-heading">PDFを追加・差し替え</h2></div>
+        <span class="section-icon" aria-hidden="true">＋</span>
+      </div>
+      <form id="textbook-form" class="protocol-form">
+        <label class="field">書名
+          <input name="title" type="text" maxlength="160" value="救急救命士標準テキスト" required>
+        </label>
+        <label class="field">版・発行年
+          <input name="edition" type="text" maxlength="100" placeholder="例：第○版、発行年">
+        </label>
+        <label class="field field-wide">PDFファイル
+          <input name="file" type="file" accept="application/pdf,.pdf" required>
+        </label>
+        <div class="form-actions field-wide">
+          <span id="textbook-status" class="save-status" role="status" aria-live="polite">PDFはこのブラウザー内に保存され、他の端末や利用者とは共有されません。</span>
+          <div class="form-buttons">
+            <button id="save-textbook" class="button button-primary" type="submit">PDFを登録</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="textbook-section" aria-labelledby="textbook-heading">
+      <div class="results-heading">
+        <h2 id="textbook-heading">登録済みテキスト</h2>
+        <div id="textbook-actions" class="protocol-actions" hidden>
+          <button id="open-textbook" class="button button-secondary" type="button">別タブで開く</button>
+          <button id="delete-textbook" class="text-button delete-button" type="button">削除</button>
+        </div>
+      </div>
+      <p id="textbook-empty" class="empty-state">テキストはまだ登録されていません。利用許諾のあるPDFを登録してください。</p>
+      <div id="textbook-viewer" class="textbook-viewer" hidden></div>
+    </section>
+
+    <aside class="notice-card" aria-label="利用上の注意">
+      <span class="notice-icon" aria-hidden="true">!</span>
+      <div>
+        <h2>保存範囲・利用許諾について</h2>
+        <p>このPDFは選択した端末・ブラウザーの保存領域にだけ保存され、GitHub Pagesや他の利用者には送信・共有されません。別端末で使う場合は、その端末でもPDFを登録してください。保存可能な容量はブラウザーや端末の空き容量に依存します。ブラウザーのデータ消去で登録したPDFも削除されます。著作権者または発行元の許諾がある教材のみ登録してください。</p>
+      </div>
+    </aside>
+  </main>
+  <footer class="footer">救急隊支援 <span>・ 端末内保存</span></footer>
+</body>
+</html>

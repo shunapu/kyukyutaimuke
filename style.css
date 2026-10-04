@@ -105,6 +105,9 @@ button, input, select { font: inherit; }
 .protocol-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 12px; }
 .protocol-actions .button { min-height: 34px; padding: 0 12px; }
 .protocols-section { margin: 29px 0; }
+.textbook-section { margin: 29px 0; }
+.textbook-viewer { height: min(78vh, 1000px); min-height: 500px; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: #e9eef1; }
+.textbook-frame { width: 100%; height: 100%; border: 0; background: #fff; }
 
 .notice-card { display: flex; gap: 12px; padding: 16px; margin-top: 25px; border: 1px solid #f0e5cb; border-radius: 10px; background: #fffaf0; }
 .notice-icon { display: grid; flex: 0 0 21px; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: #896d2f; background: #f3e8c8; font-size: 12px; font-weight: 700; }
@@ -124,9 +127,9 @@ button, input, select { font: inherit; }
 }
 
 @media (max-width: 520px) {
-  .topbar { height: 60px; padding: 0 16px; }
+  .topbar { height: auto; min-height: 60px; padding: 10px 16px; flex-wrap: wrap; gap: 7px; }
   .app-shell { width: calc(100% - 30px); margin: 26px auto 38px; }
-  .topbar-nav { gap: 2px; }
+  .topbar-nav { flex: 1 0 100%; justify-content: center; gap: 2px; }
   .nav-link { padding: 7px 8px; font-size: 10px; }
   .page-heading h1 { font-size: 23px; }
   .subheading { max-width: 245px; font-size: 11px; }
@@ -141,4 +144,5 @@ button, input, select { font: inherit; }
   .hospital-card-footer { align-items: flex-start; }
   .protocol-card { align-items: flex-start; flex-direction: column; padding: 15px 13px; }
   .protocol-actions { width: 100%; justify-content: space-between; }
+  .textbook-viewer { height: 70vh; min-height: 380px; }
 }
