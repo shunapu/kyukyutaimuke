@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <meta name="description" content="救急行動基準・マニュアル・プロトコール資料の管理">
+  <title>救急マニュアル | 救急隊支援</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="protocols.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="病院情報 ホーム">
+      <span class="brand-mark" aria-hidden="true">＋</span>
+      <span>救急隊支援<small>EMERGENCY RESPONSE</small></span>
+    </a>
+    <nav class="topbar-nav" aria-label="メインナビゲーション">
+      <a class="nav-link" href="index.html">病院情報</a>
+      <a class="nav-link nav-link-active" href="protocols.html" aria-current="page">救急マニュアル</a>
+    </nav>
+  </header>
+
+  <main class="app-shell">
+    <section class="page-heading" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">救急隊向け / 参考資料</p>
+        <h1 id="page-title">救急行動基準・マニュアル</h1>
+        <p class="subheading">所属機関が定める最新版の資料を登録して参照できます。</p>
+      </div>
+      <span class="local-badge">この端末に保存</span>
+    </section>
+
+    <section class="editor-panel" aria-labelledby="upload-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">資料の登録</p><h2 id="upload-heading">PDFを追加</h2></div>
+        <span class="section-icon" aria-hidden="true">＋</span>
+      </div>
+      <form id="protocol-form" class="protocol-form">
+        <label class="field">資料名
+          <input name="title" type="text" maxlength="120" placeholder="例：救急活動プロトコール" required>
+        </label>
+        <label class="field">分類
+          <select name="category" required>
+            <option value="救急行動基準">救急行動基準</option>
+            <option value="マニュアル">マニュアル</option>
+            <option value="プロトコール">プロトコール</option>
+            <option value="その他">その他</option>
+          </select>
+        </label>
+        <label class="field">改訂日・版
+          <input name="revision" type="text" maxlength="60" placeholder="例：2026年4月改訂 / 第3版">
+        </label>
+        <label class="field">PDFファイル
+          <input name="file" type="file" accept="application/pdf,.pdf" required>
+        </label>
+        <div class="form-actions field-wide">
+          <span id="protocol-status" class="save-status" role="status" aria-live="polite">PDFはこのブラウザー内に保存され、他の端末とは共有されません。</span>
+          <div class="form-buttons">
+            <button class="button button-primary" type="submit">資料を登録</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="protocols-section" aria-labelledby="protocol-list-heading">
+      <div class="results-heading">
+        <h2 id="protocol-list-heading">登録済み資料 <span id="protocol-count" class="result-count">0 件</span></h2>
+      </div>
+      <div id="protocol-list" class="protocol-list" aria-live="polite"></div>
+      <p id="protocol-empty" class="empty-state" hidden>資料はまだ登録されていません。所属機関の承認済み資料をPDFで登録してください。</p>
+    </section>
+
+    <aside class="notice-card" aria-label="利用上の注意">
+      <span class="notice-icon" aria-hidden="true">!</span>
+      <div>
+        <h2>資料の内容と利用について</h2>
+        <p>このページは資料保管用であり、救急行動基準や医療上の指示を提供するものではありません。所属機関が承認した最新版かを確認し、実際の活動では所属機関の規定・指示に従ってください。登録資料はこのブラウザーの保存領域にのみ保存され、バックアップや他端末との共有はありません。ブラウザーのデータ消去で資料も削除されます。</p>
+      </div>
+    </aside>
+  </main>
+  <footer class="footer">救急隊支援 <span>・ 端末内保存</span></footer>
+</body>
+</html>

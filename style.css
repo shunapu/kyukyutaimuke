@@ -29,8 +29,9 @@ button, input, select { font: inherit; }
 .brand { display: flex; align-items: center; gap: 11px; color: var(--navy); text-decoration: none; font-weight: 700; font-size: 15px; }
 .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: #fff; background: var(--teal); font-size: 25px; line-height: 1; }
 .brand small { display: block; margin-top: 1px; color: #91a0aa; font-size: 9px; letter-spacing: 1.2px; }
-.topbar-label { display: flex; align-items: center; gap: 8px; color: #637783; font-size: 12px; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #3eaa81; box-shadow: 0 0 0 3px #e5f5ed; }
+.topbar-nav { display: flex; align-items: center; gap: 8px; }
+.nav-link { padding: 8px 11px; border-radius: 6px; color: #637783; text-decoration: none; font-size: 12px; font-weight: 600; }
+.nav-link:hover, .nav-link-active { color: var(--teal); background: var(--soft-teal); }
 
 .app-shell { width: min(1120px, calc(100% - 48px)); margin: 38px auto 56px; }
 .page-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 23px; }
@@ -65,7 +66,7 @@ button, input, select { font: inherit; }
 .results-section { margin-top: 30px; }
 .search-panel { padding: 20px 22px 22px; margin-bottom: 23px; }
 .search-heading { margin-bottom: 15px; }
-.search-form { display: grid; grid-template-columns: minmax(190px, 1.7fr) minmax(145px, 1fr) minmax(145px, 1fr) auto; gap: 12px; align-items: end; }
+.search-form { display: grid; grid-template-columns: minmax(190px, 1.7fr) minmax(145px, 1fr) auto; gap: 12px; align-items: end; }
 .search-button { color: #fff; background: var(--teal); }
 .results-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 15px; }
 .results-heading h2 { margin: 0; font-size: 17px; }
@@ -94,6 +95,17 @@ button, input, select { font: inherit; }
 .delete-button { color: #a04d56; }
 .empty-state { padding: 34px 12px; border: 1px dashed #dce5e9; border-radius: 9px; color: #87959d; text-align: center; font-size: 12px; line-height: 1.7; }
 
+.protocol-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.protocol-form select { width: 100%; min-height: 39px; padding: 9px 11px; border: 1px solid #dce5e9; border-radius: 6px; color: #203746; background: #fff; font-size: 12px; }
+.protocol-list { display: grid; gap: 12px; }
+.protocol-card { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 17px 19px; border: 1px solid var(--line); border-radius: 11px; background: #fff; box-shadow: 0 2px 7px #18344a05; }
+.protocol-info { min-width: 0; }
+.protocol-info h3 { margin: 8px 0 5px; color: var(--navy); font-size: 14px; overflow-wrap: anywhere; }
+.protocol-meta { margin: 0; color: #819099; font-size: 10px; line-height: 1.7; overflow-wrap: anywhere; }
+.protocol-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 12px; }
+.protocol-actions .button { min-height: 34px; padding: 0 12px; }
+.protocols-section { margin: 29px 0; }
+
 .notice-card { display: flex; gap: 12px; padding: 16px; margin-top: 25px; border: 1px solid #f0e5cb; border-radius: 10px; background: #fffaf0; }
 .notice-icon { display: grid; flex: 0 0 21px; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: #896d2f; background: #f3e8c8; font-size: 12px; font-weight: 700; }
 .notice-card h2 { margin: 1px 0 7px; color: #65532c; font-size: 12px; }
@@ -114,16 +126,19 @@ button, input, select { font: inherit; }
 @media (max-width: 520px) {
   .topbar { height: 60px; padding: 0 16px; }
   .app-shell { width: calc(100% - 30px); margin: 26px auto 38px; }
+  .topbar-nav { gap: 2px; }
+  .nav-link { padding: 7px 8px; font-size: 10px; }
   .page-heading h1 { font-size: 23px; }
   .subheading { max-width: 245px; font-size: 11px; }
   .editor-panel, .search-panel { padding: 17px 14px; }
-  .hospital-form, .search-form { grid-template-columns: 1fr; }
+  .hospital-form, .protocol-form, .search-form { grid-template-columns: 1fr; }
   .field-wide, .search-keyword { grid-column: auto; }
   .form-actions { align-items: flex-start; flex-direction: column; }
   .form-buttons { width: 100%; }
   .form-buttons .button { flex: 1; }
   .hospital-card { padding: 15px 13px 13px; }
   .results-heading { align-items: center; }
-  .sort-control { gap: 5px; }
   .hospital-card-footer { align-items: flex-start; }
+  .protocol-card { align-items: flex-start; flex-direction: column; padding: 15px 13px; }
+  .protocol-actions { width: 100%; justify-content: space-between; }
 }

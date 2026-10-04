@@ -11,11 +11,14 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="病院情報 ホーム">
+    <a class="brand" href="index.html" aria-label="病院情報 ホーム">
       <span class="brand-mark" aria-hidden="true">＋</span>
       <span>病院情報<small>HOSPITAL DIRECTORY</small></span>
     </a>
-    <span class="topbar-label"><span class="status-dot"></span>施設情報</span>
+    <nav class="topbar-nav" aria-label="メインナビゲーション">
+      <a class="nav-link nav-link-active" href="index.html" aria-current="page">病院情報</a>
+      <a class="nav-link" href="protocols.html">救急マニュアル</a>
+    </nav>
   </header>
 
   <main class="app-shell">
@@ -23,7 +26,7 @@
       <div>
         <p class="eyebrow">救急隊向け / 病院案内</p>
         <h1 id="page-title">病院情報</h1>
-        <p class="subheading">施設情報を登録し、地域や診療科から検索できます。</p>
+        <p class="subheading">施設情報を登録し、診療科などから検索できます。</p>
       </div>
       <span class="local-badge">この端末に保存</span>
     </section>
@@ -38,16 +41,7 @@
         <label class="field">病院名
           <input name="name" type="text" maxlength="100" placeholder="病院名">
         </label>
-        <label class="field">地域・市区町村
-          <input name="area" type="text" maxlength="80" placeholder="例：○○市">
-        </label>
-        <label class="field field-wide">住所
-          <input name="address" type="text" maxlength="200" placeholder="所在地">
-        </label>
-        <label class="field">電話番号
-          <input name="phone" type="tel" maxlength="40" autocomplete="tel" placeholder="施設の代表番号">
-        </label>
-        <label class="field">診療時間・受付情報
+        <label class="field field-wide">診療時間・受付情報
           <input name="hours" type="text" maxlength="120" placeholder="例：平日 9:00〜17:00">
         </label>
         <label class="field field-wide">診療科（カンマ区切り）
@@ -73,10 +67,7 @@
         </div>
         <form id="search-form" class="search-form">
           <label class="field search-keyword">キーワード
-            <input id="keyword" type="search" placeholder="病院名、住所、診療科など" autocomplete="off">
-          </label>
-          <label class="field">地域
-            <select id="area-filter"><option value="">すべての地域</option></select>
+            <input id="keyword" type="search" placeholder="病院名、診療科など" autocomplete="off">
           </label>
           <label class="field">診療科
             <select id="department-filter"><option value="">すべての診療科</option></select>
@@ -87,12 +78,7 @@
 
       <div class="results-heading">
         <h2>施設一覧 <span id="result-count" class="result-count">0 件</span></h2>
-        <label class="sort-control">並び順
-          <select id="sort-filter" aria-label="並び順">
-            <option value="name">病院名順</option>
-            <option value="area">地域順</option>
-          </select>
-        </label>
+        <span class="sort-control">病院名順</span>
       </div>
       <div id="hospital-list" class="hospital-grid" aria-live="polite"></div>
       <p id="no-results" class="empty-state" hidden></p>

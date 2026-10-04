@@ -10,9 +10,7 @@
     status: document.querySelector("#save-status"),
     searchForm: document.querySelector("#search-form"),
     keyword: document.querySelector("#keyword"),
-    area: document.querySelector("#area-filter"),
     department: document.querySelector("#department-filter"),
-    sort: document.querySelector("#sort-filter"),
     list: document.querySelector("#hospital-list"),
     count: document.querySelector("#result-count"),
     empty: document.querySelector("#no-results")
@@ -25,21 +23,26 @@
       if (!saved) return [];
       const parsed = JSON.parse(saved);
       if (!Array.isArray(parsed)) throw new TypeError("保存データの形式が正しくありません");
-      return parsed.filter(hospital =>
+      const hospitals = parsed.filter(hospital =>
         hospital
         && typeof hospital.id === "string"
         && typeof hospital.name === "string"
-        && typeof hospital.area === "string"
       ).map(hospital => ({
         id: hospital.id,
         name: hospital.name,
-        area: hospital.area,
-        address: typeof hospital.address === "string" ? hospital.address : "",
-        phone: typeof hospital.phone === "string" ? hospital.phone : "",
         hours: typeof hospital.hours === "string" ? hospital.hours : "",
         departments: Array.isArray(hospital.departments) ? hospital.departments.filter(value => typeof value === "string") : [],
         services: Array.isArray(hospital.services) ? hospital.services.filter(value => typeof value === "string") : []
       }));
+      if (JSON.stringify(parsed) !== JSON.stringify(hospitals)) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(hospitals));
+        } catch (error) {
+          console.error("不要な施設情報を保存領域から削除できませんでした", error);
+          elements.status.textContent = "地域・住所・電話番号を保存領域から削除できません。ブラウザーの保存領域を確認してください。";
+        }
+      }
+      return hospitals;
     } catch (error) {
       console.error("病院情報を読み込めませんでした", error);
       elements.status.textContent = "保存済み情報を読み込めません。ブラウザーの保存領域を確認してください。";
@@ -84,26 +87,11 @@
     titleGroup.className = "hospital-title";
     const title = document.createElement("h3");
     title.textContent = hospital.name || "病院名未登録";
-    const area = document.createElement("span");
-    area.className = "area-label";
-    area.textContent = hospital.area || "地域未登録";
-    titleGroup.append(title, area);
+    titleGroup.append(title);
     header.append(icon, titleGroup);
 
     const details = document.createElement("dl");
     details.className = "hospital-details";
-    addDetail(details, "住所", hospital.address || "未登録");
-    if (hospital.phone) {
-      const term = document.createElement("dt");
-      term.textContent = "電話番号";
-      const definition = document.createElement("dd");
-      const link = document.createElement("a");
-      link.href = `tel:${hospital.phone.replace(/[^\d+]/g, "")}`;
-      link.textContent = hospital.phone;
-      link.className = "phone-link";
-      definition.append(link);
-      details.append(term, definition);
-    }
     addDetail(details, "診療時間", hospital.hours || "未登録");
     addDetail(details, "救急受入", "要電話確認");
 
@@ -164,27 +152,19 @@
   }
 
   function render() {
-    updateFilter(elements.area, hospitals.map(hospital => hospital.area), "すべての地域", elements.area.value);
     updateFilter(elements.department, hospitals.flatMap(hospital => hospital.departments), "すべての診療科", elements.department.value);
 
     const keyword = elements.keyword.value.trim().toLocaleLowerCase("ja");
-    const area = elements.area.value;
     const department = elements.department.value;
-    const sort = elements.sort.value;
     const results = hospitals.filter(hospital => {
       const searchable = [
-        hospital.name, hospital.area, hospital.address, hospital.phone, hospital.hours,
+        hospital.name, hospital.hours,
         ...hospital.departments, ...hospital.services
       ].join(" ").toLocaleLowerCase("ja");
       return (!keyword || searchable.includes(keyword))
-        && (!area || hospital.area === area)
         && (!department || hospital.departments.includes(department));
     });
-    results.sort((first, second) => {
-      const firstValue = sort === "area" ? first.area : first.name;
-      const secondValue = sort === "area" ? second.area : second.name;
-      return firstValue.localeCompare(secondValue, "ja");
-    });
+    results.sort((first, second) => first.name.localeCompare(second.name, "ja"));
 
     elements.list.replaceChildren(...results.map(createHospitalCard));
     elements.count.textContent = `${results.length} 件`;
@@ -209,9 +189,6 @@
     const hospital = {
       id: id || crypto.randomUUID(),
       name: String(data.get("name")).trim(),
-      area: String(data.get("area")).trim(),
-      address: String(data.get("address")).trim(),
-      phone: String(data.get("phone")).trim(),
       hours: String(data.get("hours")).trim(),
       departments: splitValues(String(data.get("departments"))),
       services: splitValues(String(data.get("services")))
@@ -236,7 +213,7 @@
     if (editButton) {
       const hospital = hospitals.find(item => item.id === editButton.dataset.edit);
       if (!hospital) return;
-      for (const field of ["id", "name", "area", "address", "phone", "hours"]) {
+      for (const field of ["id", "name", "hours"]) {
         elements.form.elements[field].value = hospital[field];
       }
       elements.form.elements.departments.value = hospital.departments.join("、");
@@ -268,9 +245,7 @@
     render();
   });
   elements.keyword.addEventListener("input", render);
-  elements.area.addEventListener("change", render);
   elements.department.addEventListener("change", render);
-  elements.sort.addEventListener("change", render);
 
   render();
 })();
