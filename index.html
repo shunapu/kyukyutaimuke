@@ -4,138 +4,68 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102a43">
-  <title>救急活動記録 | 救急隊支援</title>
+  <meta name="description" content="救急隊向け病院情報検索アプリの画面試作">
+  <title>病院情報検索 | 救急隊支援</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="救急活動記録 ホーム">
+    <a class="brand" href="#" aria-label="病院情報検索 ホーム">
       <span class="brand-mark" aria-hidden="true">＋</span>
-      <span>救急活動記録<small>FIELD RECORD</small></span>
+      <span>病院情報検索<small>HOSPITAL DIRECTORY</small></span>
     </a>
-    <div class="topbar-status"><span class="status-dot"></span>記録中</div>
+    <span class="topbar-label"><span class="status-dot"></span>施設情報</span>
   </header>
 
   <main class="app-shell">
     <section class="page-heading" aria-labelledby="page-title">
       <div>
-        <p class="eyebrow">現場活動サポート</p>
-        <h1 id="page-title">活動記録</h1>
-        <p class="subheading">現場での情報を時系列で記録します。</p>
+        <p class="eyebrow">救急隊向け / 病院案内</p>
+        <h1 id="page-title">病院を探す</h1>
+        <p class="subheading">地域や診療科から施設情報を検索できます。</p>
       </div>
-      <button class="button button-quiet" id="reset-button" type="button">記録をリセット</button>
+      <span class="demo-badge">サンプルデータ</span>
     </section>
 
-    <section class="incident-card" aria-label="活動時間">
-      <div>
-        <p class="card-label">活動経過時間</p>
-        <p class="timer" id="timer" aria-live="off">00:00:00</p>
+    <section class="search-panel" aria-label="病院検索">
+      <div class="search-title">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <div><h2>施設を検索</h2><p>地域・病院名・診療科で絞り込めます</p></div>
       </div>
-      <button class="button button-light" id="timer-button" type="button">活動開始</button>
-      <span class="incident-caption">活動開始時刻は記録の目安です</span>
+      <form id="search-form" class="search-form">
+        <label class="field search-keyword">キーワード
+          <input id="keyword" type="search" placeholder="地域名、病院名など" autocomplete="off">
+        </label>
+        <label class="field">地域
+          <select id="area-filter"><option value="">すべての地域</option></select>
+        </label>
+        <label class="field">診療科
+          <select id="department-filter"><option value="">すべての診療科</option></select>
+        </label>
+        <button class="button button-primary search-button" type="submit">検索する</button>
+      </form>
     </section>
 
-    <div class="content-grid">
-      <div class="main-column">
-        <section class="panel" aria-labelledby="patient-heading">
-          <div class="section-heading">
-            <div><p class="eyebrow">01 / 基本情報</p><h2 id="patient-heading">傷病者情報</h2></div>
-            <span class="section-icon" aria-hidden="true">01</span>
-          </div>
-          <form id="patient-form" class="patient-grid">
-            <label class="field field-wide">氏名・識別情報
-              <input name="name" type="text" autocomplete="off" placeholder="例：氏名 または 傷病者A">
-            </label>
-            <label class="field">年齢
-              <div class="input-suffix"><input name="age" type="number" min="0" max="150" inputmode="numeric" placeholder="—"><span>歳</span></div>
-            </label>
-            <label class="field">性別
-              <select name="sex">
-                <option value="">選択してください</option>
-                <option>男性</option>
-                <option>女性</option>
-                <option>未確認</option>
-              </select>
-            </label>
-            <label class="field field-wide">主訴・状況
-              <textarea name="complaint" rows="2" placeholder="観察した内容を入力"></textarea>
-            </label>
-            <div class="form-actions field-wide"><span id="save-status" class="save-status" aria-live="polite">この端末に自動保存されます</span><button class="button button-primary" type="submit">基本情報を保存</button></div>
-          </form>
-        </section>
-
-        <section class="panel" aria-labelledby="vitals-heading">
-          <div class="section-heading">
-            <div><p class="eyebrow">02 / 観察記録</p><h2 id="vitals-heading">バイタル記録</h2></div>
-            <span class="section-icon" aria-hidden="true">02</span>
-          </div>
-          <form id="vitals-form" class="vitals-form">
-            <label class="field">測定時刻<input name="time" type="time" required></label>
-            <label class="field">血圧
-              <div class="input-suffix"><input name="bloodPressure" type="text" inputmode="numeric" placeholder="120/80" aria-label="血圧（収縮期/拡張期）"><span>mmHg</span></div>
-            </label>
-            <label class="field">脈拍
-              <div class="input-suffix"><input name="pulse" type="number" min="0" inputmode="numeric" placeholder="—"><span>/分</span></div>
-            </label>
-            <label class="field">呼吸数
-              <div class="input-suffix"><input name="respiration" type="number" min="0" inputmode="numeric" placeholder="—"><span>/分</span></div>
-            </label>
-            <label class="field">SpO₂
-              <div class="input-suffix"><input name="spo2" type="number" min="0" max="100" inputmode="numeric" placeholder="—"><span>%</span></div>
-            </label>
-            <label class="field">体温
-              <div class="input-suffix"><input name="temperature" type="number" min="20" max="50" step="0.1" inputmode="decimal" placeholder="—"><span>℃</span></div>
-            </label>
-            <button class="button button-primary vitals-submit" type="submit">＋ 記録を追加</button>
-          </form>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>時刻</th><th>血圧</th><th>脈拍</th><th>呼吸</th><th>SpO₂</th><th>体温</th><th><span class="visually-hidden">操作</span></th></tr></thead>
-              <tbody id="vitals-list"></tbody>
-            </table>
-            <p id="vitals-empty" class="empty-state">バイタル記録はまだありません</p>
-          </div>
-        </section>
-
-        <section class="panel" aria-labelledby="activity-heading">
-          <div class="section-heading">
-            <div><p class="eyebrow">03 / 時系列</p><h2 id="activity-heading">活動メモ</h2></div>
-            <span class="section-icon" aria-hidden="true">03</span>
-          </div>
-          <form id="activity-form" class="activity-form">
-            <label class="field">時刻<input name="time" type="time" required></label>
-            <label class="field activity-note">内容<input name="note" type="text" maxlength="240" placeholder="観察・実施したことを記録" required></label>
-            <button class="button button-primary" type="submit">追加</button>
-          </form>
-          <ol id="activity-list" class="activity-list"></ol>
-          <p id="activity-empty" class="empty-state">活動メモはまだありません</p>
-        </section>
+    <section class="results-section" aria-labelledby="results-heading">
+      <div class="results-heading">
+        <div><p class="eyebrow">施設一覧</p><h2 id="results-heading">検索結果 <span id="result-count" class="result-count"></span></h2></div>
+        <label class="sort-control">並び順
+          <select id="sort-filter" aria-label="並び順">
+            <option value="name">病院名順</option>
+            <option value="area">地域順</option>
+          </select>
+        </label>
       </div>
+      <div id="hospital-list" class="hospital-grid" aria-live="polite"></div>
+      <p id="no-results" class="empty-state" hidden>条件に一致する施設がありません。キーワードや絞り込み条件を変更してください。</p>
+    </section>
 
-      <aside class="side-column">
-        <section class="panel checklist-panel" aria-labelledby="checklist-heading">
-          <div class="section-heading">
-            <div><p class="eyebrow">確認用</p><h2 id="checklist-heading">引き継ぎチェック</h2></div>
-          </div>
-          <p class="panel-hint">必要事項の確認にご利用ください。</p>
-          <div class="checklist">
-            <label><input type="checkbox" data-check="identity"><span>傷病者情報を確認</span></label>
-            <label><input type="checkbox" data-check="history"><span>既往歴・服薬情報を確認</span></label>
-            <label><input type="checkbox" data-check="belongings"><span>所持品・関係者を確認</span></label>
-            <label><input type="checkbox" data-check="handover"><span>記録内容を引き継ぎ</span></label>
-          </div>
-          <div class="check-progress"><span id="check-progress-text">0 / 4 項目</span><div class="progress-track"><span id="check-progress-bar"></span></div></div>
-        </section>
-
-        <section class="notice-card" aria-label="利用上の注意">
-          <span class="notice-icon" aria-hidden="true">!</span>
-          <div><h2>試作版について</h2><p>このアプリは訓練・画面確認用の試作です。医療上の判断や実際の救急活動には使用しないでください。入力データはこの端末のブラウザー内に保存されます。</p></div>
-        </section>
-      </aside>
-    </div>
-    <p id="app-message" class="app-message" role="status" aria-live="polite"></p>
+    <aside class="notice-card" aria-label="重要な注意">
+      <span class="notice-icon" aria-hidden="true">!</span>
+      <div><h2>試作版・情報の確認について</h2><p>表示される施設情報はすべて架空のサンプルです。実在の病院情報、診療内容、救急受入状況を示すものではありません。実運用では、各医療機関・地域の公式情報を確認し、受入可否は必ず関係機関への連絡で確認してください。</p></div>
+    </aside>
   </main>
-  <footer class="footer">救急活動記録 <span>・ 訓練／試作専用</span></footer>
+  <footer class="footer">病院情報検索 <span>・ 画面試作 / サンプル情報</span></footer>
 </body>
 </html>
