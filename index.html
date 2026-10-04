@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#102a43">
-  <meta name="description" content="救急隊向け病院情報検索アプリの画面試作">
-  <title>病院情報検索 | 救急隊支援</title>
+  <meta name="description" content="救急隊向け病院情報の登録・検索">
+  <title>病院情報 | 救急隊支援</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="病院情報検索 ホーム">
+    <a class="brand" href="#" aria-label="病院情報 ホーム">
       <span class="brand-mark" aria-hidden="true">＋</span>
-      <span>病院情報検索<small>HOSPITAL DIRECTORY</small></span>
+      <span>病院情報<small>HOSPITAL DIRECTORY</small></span>
     </a>
     <span class="topbar-label"><span class="status-dot"></span>施設情報</span>
   </header>
@@ -22,34 +22,71 @@
     <section class="page-heading" aria-labelledby="page-title">
       <div>
         <p class="eyebrow">救急隊向け / 病院案内</p>
-        <h1 id="page-title">病院を探す</h1>
-        <p class="subheading">地域や診療科から施設情報を検索できます。</p>
+        <h1 id="page-title">病院情報</h1>
+        <p class="subheading">施設情報を登録し、地域や診療科から検索できます。</p>
       </div>
-      <span class="demo-badge">サンプルデータ</span>
+      <span class="local-badge">この端末に保存</span>
     </section>
 
-    <section class="search-panel" aria-label="病院検索">
-      <div class="search-title">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <div><h2>施設を検索</h2><p>地域・病院名・診療科で絞り込めます</p></div>
+    <section class="editor-panel" aria-labelledby="editor-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">施設データ</p><h2 id="editor-heading">病院情報を追加</h2></div>
+        <span class="section-icon" aria-hidden="true">＋</span>
       </div>
-      <form id="search-form" class="search-form">
-        <label class="field search-keyword">キーワード
-          <input id="keyword" type="search" placeholder="地域名、病院名など" autocomplete="off">
+      <form id="hospital-form" class="hospital-form">
+        <input name="id" type="hidden">
+        <label class="field">病院名
+          <input name="name" type="text" maxlength="100" placeholder="病院名">
         </label>
-        <label class="field">地域
-          <select id="area-filter"><option value="">すべての地域</option></select>
+        <label class="field">地域・市区町村
+          <input name="area" type="text" maxlength="80" placeholder="例：○○市">
         </label>
-        <label class="field">診療科
-          <select id="department-filter"><option value="">すべての診療科</option></select>
+        <label class="field field-wide">住所
+          <input name="address" type="text" maxlength="200" placeholder="所在地">
         </label>
-        <button class="button button-primary search-button" type="submit">検索する</button>
+        <label class="field">電話番号
+          <input name="phone" type="tel" maxlength="40" autocomplete="tel" placeholder="施設の代表番号">
+        </label>
+        <label class="field">診療時間・受付情報
+          <input name="hours" type="text" maxlength="120" placeholder="例：平日 9:00〜17:00">
+        </label>
+        <label class="field field-wide">診療科（カンマ区切り）
+          <input name="departments" type="text" maxlength="300" placeholder="例：内科、外科、小児科">
+        </label>
+        <label class="field field-wide">設備・特記事項（カンマ区切り）
+          <input name="services" type="text" maxlength="300" placeholder="必要に応じて入力">
+        </label>
+        <div class="form-actions field-wide">
+          <span id="save-status" class="save-status" role="status" aria-live="polite">入力した施設情報はこのブラウザーに保存されます。</span>
+          <div class="form-buttons">
+            <button id="cancel-edit" class="button button-secondary" type="button" hidden>編集をキャンセル</button>
+            <button id="submit-hospital" class="button button-primary" type="submit">施設情報を追加</button>
+          </div>
+        </div>
       </form>
     </section>
 
     <section class="results-section" aria-labelledby="results-heading">
+      <div class="search-panel">
+        <div class="section-heading search-heading">
+          <div><p class="eyebrow">登録済みの情報</p><h2 id="results-heading">病院を検索</h2></div>
+        </div>
+        <form id="search-form" class="search-form">
+          <label class="field search-keyword">キーワード
+            <input id="keyword" type="search" placeholder="病院名、住所、診療科など" autocomplete="off">
+          </label>
+          <label class="field">地域
+            <select id="area-filter"><option value="">すべての地域</option></select>
+          </label>
+          <label class="field">診療科
+            <select id="department-filter"><option value="">すべての診療科</option></select>
+          </label>
+          <button class="button button-primary search-button" type="submit">検索する</button>
+        </form>
+      </div>
+
       <div class="results-heading">
-        <div><p class="eyebrow">施設一覧</p><h2 id="results-heading">検索結果 <span id="result-count" class="result-count"></span></h2></div>
+        <h2>施設一覧 <span id="result-count" class="result-count">0 件</span></h2>
         <label class="sort-control">並び順
           <select id="sort-filter" aria-label="並び順">
             <option value="name">病院名順</option>
@@ -58,14 +95,14 @@
         </label>
       </div>
       <div id="hospital-list" class="hospital-grid" aria-live="polite"></div>
-      <p id="no-results" class="empty-state" hidden>条件に一致する施設がありません。キーワードや絞り込み条件を変更してください。</p>
+      <p id="no-results" class="empty-state" hidden></p>
     </section>
 
-    <aside class="notice-card" aria-label="重要な注意">
+    <aside class="notice-card" aria-label="利用上の注意">
       <span class="notice-icon" aria-hidden="true">!</span>
-      <div><h2>試作版・情報の確認について</h2><p>表示される施設情報はすべて架空のサンプルです。実在の病院情報、診療内容、救急受入状況を示すものではありません。実運用では、各医療機関・地域の公式情報を確認し、受入可否は必ず関係機関への連絡で確認してください。</p></div>
+      <div><h2>情報と救急受入状況の確認</h2><p>登録された施設情報は利用者が入力した内容です。正確性や最新性は保証されません。救急受入状況はこのアプリでは確認できないため、実際の受入可否は必ず関係機関へ確認してください。保存データはこの端末のブラウザー内にのみ保存され、他の端末とは共有されません。</p></div>
     </aside>
   </main>
-  <footer class="footer">病院情報検索 <span>・ 画面試作 / サンプル情報</span></footer>
+  <footer class="footer">病院情報 <span>・ 端末内保存</span></footer>
 </body>
 </html>
