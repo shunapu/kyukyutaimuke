@@ -108,6 +108,16 @@ button, input, select { font: inherit; }
 .textbook-section { margin: 29px 0; }
 .textbook-viewer { height: min(78vh, 1000px); min-height: 500px; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: #e9eef1; }
 .textbook-frame { width: 100%; height: 100%; border: 0; background: #fff; }
+.textbook-text-viewer { overflow: auto; background: #fff; }
+.textbook-text { min-height: 100%; padding: 20px; margin: 0; color: #203746; font: 13px/1.8 "DM Sans", "Noto Sans JP", sans-serif; white-space: pre-wrap; overflow-wrap: anywhere; }
+.document-search-section { margin: 29px 0; }
+.document-search-form { display: grid; grid-template-columns: minmax(190px, 1fr) auto; gap: 12px; align-items: end; }
+.document-search-results { display: grid; gap: 9px; margin-top: 14px; }
+.document-search-result { padding: 12px 13px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.document-search-result-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.document-search-result h3 { margin: 0; color: var(--navy); font-size: 12px; overflow-wrap: anywhere; }
+.document-search-result p { margin: 8px 0 0; color: #536572; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.document-search-open { flex: 0 0 auto; min-height: 32px; padding: 0 10px; font-size: 10px; }
 
 .notice-card { display: flex; gap: 12px; padding: 16px; margin-top: 25px; border: 1px solid #f0e5cb; border-radius: 10px; background: #fffaf0; }
 .notice-icon { display: grid; flex: 0 0 21px; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: #896d2f; background: #f3e8c8; font-size: 12px; font-weight: 700; }
@@ -135,6 +145,7 @@ button, input, select { font: inherit; }
   .subheading { max-width: 245px; font-size: 11px; }
   .editor-panel, .search-panel { padding: 17px 14px; }
   .hospital-form, .protocol-form, .search-form { grid-template-columns: 1fr; }
+  .document-search-form { grid-template-columns: 1fr; }
   .field-wide, .search-keyword { grid-column: auto; }
   .form-actions { align-items: flex-start; flex-direction: column; }
   .form-buttons { width: 100%; }

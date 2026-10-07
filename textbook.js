@@ -59,6 +59,25 @@
   function createViewer(book) {
     const previousFrame = elements.viewer.querySelector("iframe");
     if (previousFrame) previousFrame.src = "about:blank";
+    if (book.fileType === "text") {
+      const reader = document.createElement("pre");
+      reader.className = "textbook-text";
+      book.file.text().then(text => {
+        reader.textContent = text;
+        elements.viewer.replaceChildren(reader);
+      }).catch(error => {
+        console.error("テキストを表示できませんでした", error);
+        elements.status.textContent = "テキストを表示できませんでした。ファイル形式を確認してください。";
+      });
+      elements.viewer.replaceChildren(reader);
+      elements.viewer.classList.add("textbook-text-viewer");
+      elements.viewer.hidden = false;
+      elements.empty.hidden = true;
+      elements.actions.hidden = false;
+      elements.status.textContent = `「${book.title}」${book.edition ? `（${book.edition}）` : ""}を表示しています。`;
+      return;
+    }
+    elements.viewer.classList.remove("textbook-text-viewer");
     const url = URL.createObjectURL(book.file);
     documentUrls.add(url);
     const frame = document.createElement("iframe");
@@ -101,8 +120,11 @@
       elements.status.textContent = "登録するPDFファイルを選択してください。";
       return;
     }
-    if (file.type !== "application/pdf" && !file.name.toLocaleLowerCase("ja").endsWith(".pdf")) {
-      elements.status.textContent = "PDFファイルを選択してください。";
+    const fileName = file.name.toLocaleLowerCase("ja");
+    const isPdf = file.type === "application/pdf" || fileName.endsWith(".pdf");
+    const isText = file.type === "text/plain" || file.type === "text/markdown" || fileName.endsWith(".txt") || fileName.endsWith(".md");
+    if (!isPdf && !isText) {
+      elements.status.textContent = "PDFまたはテキスト（TXT/Markdown）ファイルを選択してください。";
       return;
     }
 
@@ -114,7 +136,8 @@
       title: String(data.get("title")).trim(),
       edition: String(data.get("edition")).trim(),
       fileName: file.name,
-      file: file.type === "application/pdf" ? file : file.slice(0, file.size, "application/pdf"),
+      fileType: isText ? "text" : "pdf",
+      file: isPdf && file.type !== "application/pdf" ? file.slice(0, file.size, "application/pdf") : file,
       updatedAt: Date.now()
     };
     elements.save.disabled = true;

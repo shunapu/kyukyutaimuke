@@ -64,6 +64,22 @@
       </form>
     </section>
 
+    <section class="document-search-section" aria-labelledby="document-search-heading">
+      <div class="search-panel">
+        <div class="section-heading search-heading">
+          <div><p class="eyebrow">登録済み資料の本文</p><h2 id="document-search-heading">資料内を検索</h2></div>
+        </div>
+        <form id="document-search-form" class="document-search-form">
+          <label class="field">キーワード・語句
+            <input id="document-search-keyword" type="search" placeholder="本文から検索" autocomplete="off" required>
+          </label>
+          <button class="button button-primary" type="submit">本文を検索</button>
+        </form>
+        <p id="document-search-status" class="save-status" role="status" aria-live="polite"></p>
+        <div id="document-search-results" class="document-search-results" aria-live="polite"></div>
+      </div>
+    </section>
+
     <section class="protocols-section" aria-labelledby="protocol-list-heading">
       <div class="results-heading">
         <h2 id="protocol-list-heading">登録済み資料 <span id="protocol-count" class="result-count">0 件</span></h2>
@@ -81,5 +97,6 @@
     </aside>
   </main>
   <footer class="footer">救急隊支援 <span>・ 端末内保存</span></footer>
+  <script src="document-search.js" defer></script>
 </body>
 </html>

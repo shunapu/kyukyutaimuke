@@ -34,7 +34,7 @@
 
     <section class="editor-panel" aria-labelledby="upload-heading">
       <div class="section-heading">
-        <div><p class="eyebrow">テキストの登録</p><h2 id="upload-heading">PDFを追加・差し替え</h2></div>
+        <div><p class="eyebrow">テキストの登録</p><h2 id="upload-heading">テキスト/PDFを追加・差し替え</h2></div>
         <span class="section-icon" aria-hidden="true">＋</span>
       </div>
       <form id="textbook-form" class="protocol-form">
@@ -44,16 +44,32 @@
         <label class="field">版・発行年
           <input name="edition" type="text" maxlength="100" placeholder="例：第○版、発行年">
         </label>
-        <label class="field field-wide">PDFファイル
-          <input name="file" type="file" accept="application/pdf,.pdf" required>
+        <label class="field field-wide">PDFまたはテキストファイル
+          <input name="file" type="file" accept="application/pdf,.pdf,text/plain,.txt,text/markdown,.md" required>
         </label>
         <div class="form-actions field-wide">
-          <span id="textbook-status" class="save-status" role="status" aria-live="polite">PDFはこのブラウザー内に保存され、他の端末や利用者とは共有されません。</span>
+          <span id="textbook-status" class="save-status" role="status" aria-live="polite">PDF/テキストはこのブラウザー内に保存され、他の端末や利用者とは共有されません。</span>
           <div class="form-buttons">
             <button id="save-textbook" class="button button-primary" type="submit">PDFを登録</button>
           </div>
         </div>
       </form>
+    </section>
+
+    <section class="document-search-section" aria-labelledby="document-search-heading">
+      <div class="search-panel">
+        <div class="section-heading search-heading">
+          <div><p class="eyebrow">登録済み資料の本文</p><h2 id="document-search-heading">資料内を検索</h2></div>
+        </div>
+        <form id="document-search-form" class="document-search-form">
+          <label class="field">キーワード・語句
+            <input id="document-search-keyword" type="search" placeholder="本文から検索" autocomplete="off" required>
+          </label>
+          <button class="button button-primary" type="submit">本文を検索</button>
+        </form>
+        <p id="document-search-status" class="save-status" role="status" aria-live="polite"></p>
+        <div id="document-search-results" class="document-search-results" aria-live="polite"></div>
+      </div>
     </section>
 
     <section class="textbook-section" aria-labelledby="textbook-heading">
@@ -77,5 +93,6 @@
     </aside>
   </main>
   <footer class="footer">救急隊支援 <span>・ 端末内保存</span></footer>
+  <script src="document-search.js" defer></script>
 </body>
 </html>
