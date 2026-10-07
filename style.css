@@ -113,6 +113,13 @@ button, input, select { font: inherit; }
 .document-search-section { margin: 29px 0; }
 .document-search-form { display: grid; grid-template-columns: minmax(190px, 1fr) auto; gap: 12px; align-items: end; }
 .document-search-results { display: grid; gap: 9px; margin-top: 14px; }
+.document-search-summary { padding: 15px; margin-top: 16px; border: 1px solid #dcebea; border-radius: 9px; background: #f5fbfa; }
+.document-search-summary h3 { margin: 0; color: var(--navy); font-size: 14px; }
+.summary-disclaimer { margin: 5px 0 11px; color: #71828c; font-size: 10px; line-height: 1.6; }
+.document-search-summary-content { display: grid; gap: 9px; }
+.document-search-summary-item { padding: 10px 12px; border-left: 3px solid var(--teal); border-radius: 4px; background: #fff; }
+.document-search-summary-item h4 { margin: 0 0 5px; color: #397277; font-size: 10px; }
+.document-search-summary-item p { margin: 0; color: #405663; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
 .document-search-result { padding: 12px 13px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .document-search-result-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .document-search-result h3 { margin: 0; color: var(--navy); font-size: 12px; overflow-wrap: anywhere; }

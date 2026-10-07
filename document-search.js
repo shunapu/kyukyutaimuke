@@ -6,6 +6,8 @@
     form: document.querySelector("#document-search-form"),
     keyword: document.querySelector("#document-search-keyword"),
     status: document.querySelector("#document-search-status"),
+    summary: document.querySelector("#document-search-summary"),
+    summaryContent: document.querySelector("#document-search-summary-content"),
     results: document.querySelector("#document-search-results")
   };
   let searchedDocuments = [];
@@ -112,11 +114,11 @@
     const matches = [];
     for (const [index, line] of lines.entries()) {
       if (findKeywordIndex(line, keyword) >= 0) {
-        matches.push({ documentIndex, location: `行 ${index + 1}`, snippet: createSnippet(line, keyword) });
+        matches.push({ documentIndex, location: `行 ${index + 1}`, snippet: createSnippet(line, keyword), text });
       }
     }
     if (!matches.length) {
-      matches.push({ documentIndex, location: "本文", snippet: createSnippet(text, keyword) });
+      matches.push({ documentIndex, location: "本文", snippet: createSnippet(text, keyword), text });
     }
     return matches;
   }
@@ -134,7 +136,7 @@
         const text = content.items.map(item => "str" in item ? item.str : "").join("");
         hasText ||= text.trim().length > 0;
         if (findKeywordIndex(text, keyword) >= 0) {
-          matches.push({ documentIndex, location: `ページ ${pageNumber}`, snippet: createSnippet(text, keyword), page: pageNumber });
+          matches.push({ documentIndex, location: `ページ ${pageNumber}`, snippet: createSnippet(text, keyword), page: pageNumber, text });
         }
         page.cleanup();
         if (pageNumber % 8 === 0) {
@@ -169,6 +171,54 @@
     return card;
   }
 
+  function createSummary(matches, keyword) {
+    const candidates = [];
+    const seen = new Set();
+    for (const match of matches) {
+      const documentInfo = searchedDocuments[match.documentIndex];
+      const sentences = match.text.match(/[^。！？!?\n]+[。！？!?]?/g) || [];
+      for (const rawSentence of sentences) {
+        const sentence = rawSentence.replace(/\s+/g, " ").trim();
+        const normalizedSentence = normalize(sentence).replace(/\s/g, "");
+        const normalizedKeyword = keyword.replace(/\s/g, "");
+        if (!sentence || !normalizedSentence.includes(normalizedKeyword) || seen.has(normalizedSentence)) continue;
+        seen.add(normalizedSentence);
+        const score = normalizedSentence.split(normalizedKeyword).length - 1;
+        const keywordIndex = findKeywordIndex(sentence, keyword);
+        const summarySentence = sentence.length <= 280
+          ? sentence
+          : `${keywordIndex > 100 ? "…" : ""}${sentence.slice(Math.max(0, keywordIndex - 100), keywordIndex + 180)}…`;
+        candidates.push({
+          title: [documentInfo.title, match.location].filter(Boolean).join(" ・ "),
+          sentence: summarySentence,
+          score,
+          length: sentence.length
+        });
+      }
+    }
+
+    candidates.sort((first, second) =>
+      second.score - first.score
+      || Math.abs(first.length - 120) - Math.abs(second.length - 120)
+    );
+    return candidates.slice(0, 5);
+  }
+
+  function renderSummary(matches, keyword) {
+    const items = createSummary(matches, keyword).map(summary => {
+      const item = document.createElement("article");
+      item.className = "document-search-summary-item";
+      const heading = document.createElement("h4");
+      heading.textContent = summary.title;
+      const text = document.createElement("p");
+      text.textContent = summary.sentence;
+      item.append(heading, text);
+      return item;
+    });
+    elements.summaryContent.replaceChildren(...items);
+    elements.summary.hidden = items.length === 0;
+  }
+
   elements.form.addEventListener("submit", async event => {
     event.preventDefault();
     if (!elements.form.reportValidity()) return;
@@ -176,6 +226,8 @@
     if (!keyword) return;
     elements.form.querySelector("button[type=submit]").disabled = true;
     elements.results.replaceChildren();
+    elements.summaryContent.replaceChildren();
+    elements.summary.hidden = true;
     elements.status.textContent = "登録済み資料を読み込んでいます。";
     const matches = [];
     const errors = [];
@@ -216,6 +268,7 @@
           errors.push(documentInfo.title);
         }
       }
+      renderSummary(matches, keyword);
       elements.results.replaceChildren(...matches.slice(0, maxResults).map(createResult));
       const countMessage = matches.length
         ? `${matches.length}${matches.length > maxResults ? `（先頭${maxResults}件を表示）` : ""} 件見つかりました。`

@@ -69,6 +69,11 @@
           <button class="button button-primary" type="submit">本文を検索</button>
         </form>
         <p id="document-search-status" class="save-status" role="status" aria-live="polite"></p>
+        <section id="document-search-summary" class="document-search-summary" aria-labelledby="document-search-summary-heading" hidden>
+          <h3 id="document-search-summary-heading">キーワードに関連する内容</h3>
+          <p class="summary-disclaimer">登録本文から関連する文を抽出して整理しています。生成AIによる解釈や医療上の判断ではありません。</p>
+          <div id="document-search-summary-content" class="document-search-summary-content"></div>
+        </section>
         <div id="document-search-results" class="document-search-results" aria-live="polite"></div>
       </div>
     </section>
