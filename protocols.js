@@ -4,7 +4,6 @@
   const DATABASE_NAME = "kyukyutaimuke-protocols";
   const STORE_NAME = "documents";
   const MAX_FILE_SIZE = 50 * 1024 * 1024;
-  const documentUrls = new Set();
   const elements = {
     form: document.querySelector("#protocol-form"),
     status: document.querySelector("#protocol-status"),
@@ -151,26 +150,16 @@
     const button = openButton || deleteButton;
     if (!button) return;
 
-    const viewer = openButton ? window.open("about:blank", "_blank") : null;
-    if (openButton && !viewer) {
-      elements.status.textContent = "PDFを開けませんでした。ブラウザーのポップアップ設定を確認してください。";
-      return;
-    }
-    if (viewer) viewer.opener = null;
-
     try {
       const documentInfo = await withStore("readonly", store => store.get(button.dataset.open || button.dataset.delete));
       if (!documentInfo) {
-        if (viewer) viewer.close();
         elements.status.textContent = "資料が見つかりません。一覧を更新してください。";
         await render();
         return;
       }
 
       if (openButton) {
-        const url = URL.createObjectURL(documentInfo.file);
-        documentUrls.add(url);
-        viewer.location.href = url;
+        window.PdfDocumentViewer.open(documentInfo.file, documentInfo.title);
         return;
       }
 
@@ -179,14 +168,8 @@
       elements.status.textContent = "資料を削除しました。";
       await render();
     } catch (error) {
-      if (viewer) viewer.close();
       showError(error, openButton ? "PDFを開けませんでした" : "資料を削除できませんでした");
     }
-  });
-
-  window.addEventListener("pagehide", () => {
-    for (const url of documentUrls) URL.revokeObjectURL(url);
-    documentUrls.clear();
   });
 
   render();

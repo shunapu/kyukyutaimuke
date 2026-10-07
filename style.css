@@ -118,6 +118,20 @@ button, input, select { font: inherit; }
 .document-search-result h3 { margin: 0; color: var(--navy); font-size: 12px; overflow-wrap: anywhere; }
 .document-search-result p { margin: 8px 0 0; color: #536572; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
 .document-search-open { flex: 0 0 auto; min-height: 32px; padding: 0 10px; font-size: 10px; }
+.pdf-viewer-toolbar { position: sticky; top: 0; z-index: 1; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid var(--line); background: #fff; }
+.pdf-viewer-toolbar .button { min-height: 33px; padding: 0 11px; font-size: 11px; }
+.pdf-viewer-toolbar input { width: 64px; min-height: 33px; padding: 5px 7px; border: 1px solid #dce5e9; border-radius: 6px; text-align: center; }
+.pdf-viewer-toolbar span { color: var(--muted); font-size: 11px; }
+.pdf-viewer-stage { display: flex; justify-content: center; min-height: 300px; padding: 16px 8px; overflow: auto; }
+.pdf-viewer-canvas { max-width: none; height: auto; background: #fff; box-shadow: 0 2px 12px #18344a22; }
+.pdf-viewer-dialog { width: min(1000px, calc(100% - 28px)); max-width: none; height: min(92vh, 1100px); max-height: none; padding: 0; overflow: hidden; border: 0; border-radius: 11px; background: #e9eef1; box-shadow: 0 20px 60px #102a4350; }
+.pdf-viewer-dialog::backdrop { background: #102a4380; }
+.pdf-viewer-dialog-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 11px 17px; background: #fff; border-bottom: 1px solid var(--line); }
+.pdf-viewer-dialog-header h2 { min-width: 0; margin: 0; color: var(--navy); font-size: 14px; overflow-wrap: anywhere; }
+.pdf-dialog-viewer { height: calc(100% - 51px); overflow: auto; }
+.pdf-dialog-viewer .pdf-viewer-toolbar { position: sticky; top: 0; }
+.pdf-dialog-viewer .pdf-viewer-stage { min-height: 200px; }
+.pdf-viewer-container { min-height: 500px; overflow: auto; border: 1px solid var(--line); border-radius: 9px; background: #e9eef1; }
 
 .notice-card { display: flex; gap: 12px; padding: 16px; margin-top: 25px; border: 1px solid #f0e5cb; border-radius: 10px; background: #fffaf0; }
 .notice-icon { display: grid; flex: 0 0 21px; place-items: center; width: 21px; height: 21px; border-radius: 50%; color: #896d2f; background: #f3e8c8; font-size: 12px; font-weight: 700; }

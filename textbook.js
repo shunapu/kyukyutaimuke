@@ -4,7 +4,6 @@
   const DATABASE_NAME = "kyukyutaimuke-textbook";
   const STORE_NAME = "books";
   const BOOK_KEY = "standard-textbook";
-  const documentUrls = new Set();
   const elements = {
     form: document.querySelector("#textbook-form"),
     status: document.querySelector("#textbook-status"),
@@ -56,54 +55,56 @@
     });
   }
 
-  function createViewer(book) {
-    const previousFrame = elements.viewer.querySelector("iframe");
-    if (previousFrame) previousFrame.src = "about:blank";
+  async function createViewer(book) {
     if (book.fileType === "text") {
+      await window.PdfDocumentViewer.clear(elements.viewer);
       const reader = document.createElement("pre");
       reader.className = "textbook-text";
-      book.file.text().then(text => {
-        reader.textContent = text;
-        elements.viewer.replaceChildren(reader);
-      }).catch(error => {
+      let loaded = false;
+      try {
+        reader.textContent = await book.file.text();
+        loaded = true;
+      } catch (error) {
         console.error("テキストを表示できませんでした", error);
         elements.status.textContent = "テキストを表示できませんでした。ファイル形式を確認してください。";
-      });
+      }
       elements.viewer.replaceChildren(reader);
       elements.viewer.classList.add("textbook-text-viewer");
       elements.viewer.hidden = false;
       elements.empty.hidden = true;
       elements.actions.hidden = false;
-      elements.status.textContent = `「${book.title}」${book.edition ? `（${book.edition}）` : ""}を表示しています。`;
+      if (loaded) elements.status.textContent = `「${book.title}」${book.edition ? `（${book.edition}）` : ""}を表示しています。`;
       return;
     }
     elements.viewer.classList.remove("textbook-text-viewer");
-    const url = URL.createObjectURL(book.file);
-    documentUrls.add(url);
-    const frame = document.createElement("iframe");
-    frame.className = "textbook-frame";
-    frame.title = `${book.title} PDF`;
-    frame.src = url;
-    elements.viewer.replaceChildren(frame);
+    elements.viewer.classList.add("pdf-viewer-container");
     elements.viewer.hidden = false;
     elements.empty.hidden = true;
     elements.actions.hidden = false;
     elements.status.textContent = `「${book.title}」${book.edition ? `（${book.edition}）` : ""}を表示しています。`;
+    try {
+      await window.PdfDocumentViewer.mount(elements.viewer, book.file, book.title);
+    } catch (error) {
+      console.error("救急救命士標準テキストを表示できませんでした", error);
+      elements.status.textContent = "PDFを表示できませんでした。インターネット接続またはPDFファイルを確認してください。";
+    }
   }
 
   async function render() {
     try {
       const book = await withStore("readonly", store => store.get(BOOK_KEY));
       if (!book) {
+        await window.PdfDocumentViewer.clear(elements.viewer);
+        elements.viewer.classList.remove("textbook-text-viewer", "pdf-viewer-container");
         elements.viewer.replaceChildren();
         elements.viewer.hidden = true;
         elements.actions.hidden = true;
         elements.empty.hidden = false;
-        elements.save.textContent = "PDFを登録";
+        elements.save.textContent = "資料を登録";
         return;
       }
-      elements.save.textContent = "PDFを差し替え";
-      createViewer(book);
+      elements.save.textContent = "資料を差し替え";
+      await createViewer(book);
     } catch (error) {
       console.error("救急救命士標準テキストを読み込めませんでした", error);
       elements.status.textContent = "教材を読み込めませんでした。ブラウザーの保存領域を確認してください。";
@@ -128,7 +129,7 @@
       return;
     }
 
-    const replacing = elements.save.textContent === "PDFを差し替え";
+    const replacing = elements.save.textContent === "資料を差し替え";
     if (replacing && !window.confirm("登録済みのテキストを新しいPDFに差し替えますか？")) return;
 
     const book = {
@@ -141,46 +142,40 @@
       updatedAt: Date.now()
     };
     elements.save.disabled = true;
-    elements.status.textContent = "PDFを保存しています。ファイルサイズにより時間がかかる場合があります。";
+    elements.status.textContent = "ファイルを保存しています。ファイルサイズにより時間がかかる場合があります。";
     try {
       await withStore("readwrite", store => store.put(book));
       elements.form.reset();
       elements.form.elements.title.value = book.title;
       elements.form.elements.edition.value = book.edition;
-      elements.status.textContent = "PDFをこの端末に登録しました。";
+      elements.status.textContent = "資料をこの端末に登録しました。";
       await render();
     } catch (error) {
       console.error("救急救命士標準テキストを保存できませんでした", error);
       elements.status.textContent = error.name === "QuotaExceededError"
         ? "ブラウザーの保存容量が不足しているため登録できません。空き容量を確保するか、より小さいPDFを使用してください。"
-        : "PDFを保存できませんでした。ブラウザーの保存領域と空き容量を確認してください。";
+        : "ファイルを保存できませんでした。ブラウザーの保存領域と空き容量を確認してください。";
     } finally {
       elements.save.disabled = false;
     }
   });
 
   elements.open.addEventListener("click", async () => {
-    const viewer = window.open("about:blank", "_blank");
-    if (!viewer) {
-      elements.status.textContent = "PDFを開けませんでした。ブラウザーのポップアップ設定を確認してください。";
-      return;
-    }
-    viewer.opener = null;
     try {
       const book = await withStore("readonly", store => store.get(BOOK_KEY));
       if (!book) {
-        viewer.close();
         elements.status.textContent = "登録済みテキストが見つかりません。";
         await render();
         return;
       }
-      const url = URL.createObjectURL(book.file);
-      documentUrls.add(url);
-      viewer.location.href = url;
+      if (book.fileType === "text") {
+        window.PdfDocumentViewer.open(book.file, book.title, 1, "text");
+        return;
+      }
+      window.PdfDocumentViewer.open(book.file, book.title);
     } catch (error) {
-      viewer.close();
       console.error("救急救命士標準テキストを開けませんでした", error);
-      elements.status.textContent = "PDFを開けませんでした。ブラウザーの保存領域を確認してください。";
+      elements.status.textContent = "PDFを表示できませんでした。ブラウザーの保存領域を確認してください。";
     }
   });
 
@@ -194,11 +189,6 @@
       console.error("救急救命士標準テキストを削除できませんでした", error);
       elements.status.textContent = "教材を削除できませんでした。ブラウザーの保存領域を確認してください。";
     }
-  });
-
-  window.addEventListener("pagehide", () => {
-    for (const url of documentUrls) URL.revokeObjectURL(url);
-    documentUrls.clear();
   });
 
   render();

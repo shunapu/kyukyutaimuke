@@ -1,8 +1,6 @@
 (() => {
   "use strict";
 
-  const pdfWorkerUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-  const pdfLibraryUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
   const maxResults = 100;
   const elements = {
     form: document.querySelector("#document-search-form"),
@@ -11,33 +9,7 @@
     results: document.querySelector("#document-search-results")
   };
   let searchedDocuments = [];
-  let pdfLibraryPromise;
-  const documentUrls = new Set();
-
-  function loadPdfLibrary() {
-    if (window.pdfjsLib) return Promise.resolve();
-    if (!pdfLibraryPromise) {
-      pdfLibraryPromise = new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        script.src = pdfLibraryUrl;
-        script.onload = () => {
-          if (!window.pdfjsLib) {
-            pdfLibraryPromise = null;
-            reject(new Error("PDF検索ライブラリーを初期化できませんでした"));
-            return;
-          }
-          window.pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
-          resolve();
-        };
-        script.onerror = () => {
-          pdfLibraryPromise = null;
-          reject(new Error("PDF検索ライブラリーを読み込めませんでした"));
-        };
-        document.head.append(script);
-      });
-    }
-    return pdfLibraryPromise;
-  }
+  const loadPdfLibrary = () => window.PdfDocumentViewer.loadLibrary();
 
   function openDatabase(name, version, storeName) {
     return new Promise((resolve, reject) => {
@@ -154,11 +126,13 @@
       data: new Uint8Array(await documentInfo.file.arrayBuffer())
     }).promise;
     const matches = [];
+    let hasText = false;
     try {
       for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
         const page = await pdf.getPage(pageNumber);
         const content = await page.getTextContent();
         const text = content.items.map(item => "str" in item ? item.str : "").join("");
+        hasText ||= text.trim().length > 0;
         if (findKeywordIndex(text, keyword) >= 0) {
           matches.push({ documentIndex, location: `ページ ${pageNumber}`, snippet: createSnippet(text, keyword), page: pageNumber });
         }
@@ -171,7 +145,7 @@
     } finally {
       await pdf.destroy();
     }
-    return matches;
+    return { matches, hasText };
   }
 
   function createResult(match) {
@@ -187,7 +161,7 @@
     open.className = "button button-secondary document-search-open";
     open.dataset.openIndex = String(match.documentIndex);
     open.dataset.page = String(match.page || "");
-    open.textContent = "資料を開く";
+    open.textContent = "アプリ内で開く";
     const snippet = document.createElement("p");
     snippet.textContent = match.snippet;
     heading.append(title, open);
@@ -205,6 +179,7 @@
     elements.status.textContent = "登録済み資料を読み込んでいます。";
     const matches = [];
     const errors = [];
+    const unsearchableDocuments = [];
     try {
       searchedDocuments = await loadDocuments();
       if (!searchedDocuments.length) {
@@ -227,12 +202,15 @@
           if (documentInfo.fileType !== "text" && !window.pdfjsLib) {
             throw pdfLibraryError || new Error("PDF検索ライブラリーを読み込めません");
           }
-          const documentMatches = documentInfo.fileType === "text"
-            ? await searchText(documentInfo, keyword, documentIndex)
-            : await searchPdf(documentInfo, keyword, documentIndex, status => {
+          if (documentInfo.fileType === "text") {
+            matches.push(...await searchText(documentInfo, keyword, documentIndex));
+          } else {
+            const result = await searchPdf(documentInfo, keyword, documentIndex, status => {
               elements.status.textContent = status;
             });
-          matches.push(...documentMatches);
+            matches.push(...result.matches);
+            if (!result.hasText) unsearchableDocuments.push(documentInfo.title);
+          }
         } catch (error) {
           console.error(`「${documentInfo.title}」を検索できませんでした`, error);
           errors.push(documentInfo.title);
@@ -242,9 +220,12 @@
       const countMessage = matches.length
         ? `${matches.length}${matches.length > maxResults ? `（先頭${maxResults}件を表示）` : ""} 件見つかりました。`
         : "一致する箇所は見つかりませんでした。";
+      const scanMessage = unsearchableDocuments.length
+        ? ` ${unsearchableDocuments.join("、")}はテキストを抽出できません。スキャン画像のPDFはOCRが必要です。`
+        : "";
       elements.status.textContent = errors.length
-        ? `${countMessage} ${errors.join("、")}は検索できませんでした。${pdfLibraryError ? "PDF検索にはインターネット接続が必要です。" : ""}`
-        : countMessage;
+        ? `${countMessage} ${errors.join("、")}は検索できませんでした。${pdfLibraryError ? "PDF検索にはインターネット接続が必要です。" : ""}${scanMessage}`
+        : `${countMessage}${scanMessage}`;
     } catch (error) {
       console.error("登録済み資料を検索できませんでした", error);
       elements.status.textContent = "登録済み資料を検索できませんでした。ブラウザーの保存領域を確認してください。";
@@ -258,19 +239,6 @@
     if (!button) return;
     const documentInfo = searchedDocuments[Number(button.dataset.openIndex)];
     if (!documentInfo) return;
-    const viewer = window.open("about:blank", "_blank");
-    if (!viewer) {
-      elements.status.textContent = "資料を開けませんでした。ブラウザーのポップアップ設定を確認してください。";
-      return;
-    }
-    viewer.opener = null;
-    const url = URL.createObjectURL(documentInfo.file);
-    documentUrls.add(url);
-    viewer.location.href = `${url}${button.dataset.page ? `#page=${button.dataset.page}` : ""}`;
-  });
-
-  window.addEventListener("pagehide", () => {
-    for (const url of documentUrls) URL.revokeObjectURL(url);
-    documentUrls.clear();
+    window.PdfDocumentViewer.open(documentInfo.file, documentInfo.title, Number(button.dataset.page) || 1, documentInfo.fileType);
   });
 })();
